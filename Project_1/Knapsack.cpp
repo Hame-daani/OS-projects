@@ -4,55 +4,45 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 
 using namespace std;
 
-struct Memory
-{
-    pid_t *IDs;
-};
-
-#define MEMORY_SIZE sizeof(Memory)
-#define MEMORY_NAME "shm"
-
 int main()
 {
-    // get number of proccesors
-    int numCPU = (int)sysconf(_SC_NPROCESSORS_ONLN);
-    cout << "Number of Processors is " + to_string(numCPU) << endl;
+    const int SIZE = 4096;
+    const char *name = "OS";
+    const char *msg_0 = "Hello";
+    const char *msg_1 = "World!";
 
-    //create shared memory
-    int shm_fd;
-    if ((shm_fd = shm_open(MEMORY_NAME, O_CREAT | O_RDWR, 0666)) == -1)
-    {
-        cout << "error in shm open" << endl;
-        return 0;
-    }
-    if ((ftruncate(shm_fd, MEMORY_SIZE)) == -1)
-    {
-        cout << "error in ftruncate" << endl;
-        return 0;
-    }
-    Memory *shm = (Memory *)mmap(0, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    int fd;
+    char *ptr;
+    fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+    ftruncate(fd, SIZE);
+    ptr = (char *)mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    sprintf(ptr, "%s", msg_0);
+    ptr += strlen(msg_0);
+    sprintf(ptr, "%s", msg_1);
+    ptr += strlen(msg_1);
 
-    // test memory
-    shm->IDs = new pid_t[numCPU];
-    for (int i = 0; i < numCPU; i++)
-        shm->IDs[i] = getpid() + i;
     pid_t pid;
     pid = fork();
     if (pid == 0)
     {
-        for (int i = 0; i < numCPU; i++)
-            cout << shm->IDs[i] << endl;
-        cout << "child done" << endl;
-        return 0;
+        cout << "child start." << endl;
+        execl("child.o", "child.o", NULL);
     }
     if (pid > 0)
     {
+        kill(pid, SIGSTOP);
+        sprintf(ptr, "%s", "Another");
+        ptr += strlen("Another");
+        kill(pid, SIGCONT);
+        cout << "parent wait" << endl;
         wait(NULL);
-        cout << "parent done" << endl;
-        return 0;
+        printf("%s", (char *)ptr);
+        shm_unlink(name);
+        cout << "\nparent done" << endl;
     }
 
     return 0;
