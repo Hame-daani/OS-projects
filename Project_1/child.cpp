@@ -34,27 +34,23 @@ int main()
     int mySeed = getSeed(seeds_shm, myIndex);
     srand(mySeed);
 
-    cout << "child " << myIndex << " of " << getppid() << " seed: " << mySeed << " random: " << rand() << endl;
+    cout << getpid() << " child number: " << myIndex << " seed: " << mySeed << endl;
 
     return 0;
 }
 
 int getIndex(pid_t *ptr, int num)
 {
+    pid_t id = getpid();
     for (int i = 0; i < num; i++)
     {
-        pid_t val = *ptr;
-        if (val == getpid())
-        {
+        if (ptr[i] == id)
             return i;
-        }
-        ptr += sizeof(val);
     }
+    return -1;
 }
 
 int getSeed(int *ptr, int index)
 {
-    for (int i = 0; i < index; i++)
-        ptr += sizeof(int);
-    return *ptr;
+    return ptr[index];
 }

@@ -26,7 +26,7 @@ int main()
     fd = shm_open(seeds_shm_name, O_CREAT | O_RDWR, 0666);
 
     ftruncate(fd, seeds_shm_size);
-    
+
     int *seeds_shm = (int *)mmap(0, seeds_shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
     srand(time(0));
@@ -36,10 +36,8 @@ int main()
         pid = fork();
         if (pid == 0)
             break;
-        *ids_shm = pid;
-        ids_shm += sizeof(pid);
-        *seeds_shm = rand();
-        seeds_shm += sizeof(int);
+        ids_shm[i] = pid;
+        seeds_shm[i] = rand();
     }
     if (pid == 0)
     {
@@ -53,6 +51,10 @@ int main()
             wait(NULL);
         }
         cout << "parent run" << endl;
+        for (int i = 0; i < numCPU; i++)
+        {
+            cout << "child " << i << " id: " << ids_shm[i] << " seed: " << seeds_shm[i] << endl;
+        }
         cout << getpid() << endl;
         munmap(ids_shm, ids_shm_size);
         shm_unlink(ids_shm_name);
