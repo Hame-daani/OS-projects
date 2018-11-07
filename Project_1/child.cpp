@@ -5,6 +5,7 @@
 #include <fcntl.h>    /* For O_* constants */
 #include <signal.h>
 #include <sys/wait.h>
+#include <fstream>
 
 using namespace std;
 
@@ -12,6 +13,9 @@ int getIndex(pid_t *, int);
 int getSeed(int *, int);
 void *createMemory(const char *, int);
 void *openMemory(const char *, int);
+
+#define WEIGHT 0
+#define VALUE 1
 
 int main()
 {
@@ -26,12 +30,21 @@ int main()
 
     int *seeds_shm = (int *)openMemory(seeds_shm_name, seeds_shm_size);
 
+    int data[100][100];
+    ifstream f;
+    f.open("data.txt");
+    int i = 0;
+    while (f >> data[i + 1][WEIGHT] && f >> data[i + 1][VALUE])
+        i++;
+    f.close();
+    
     //cout << "child run" << endl;
     int myIndex = getIndex(ids_shm, numCPU);
     int mySeed = getSeed(seeds_shm, myIndex);
     srand(mySeed);
 
-    cout << getpid() << " child number: " << myIndex << " seed: " << mySeed << endl;
+    i = rand() % 100 + 1;
+    cout << getpid() << " child number: " << myIndex << " - " << i << " " << data[i][WEIGHT] << " : " << data[i][VALUE] << endl;
 
     return 0;
 }

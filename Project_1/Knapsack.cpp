@@ -5,6 +5,7 @@
 #include <fcntl.h>    /* For O_* constants */
 #include <signal.h>
 #include <sys/wait.h>
+#include<fstream>
 
 using namespace std;
 
@@ -34,12 +35,14 @@ int main()
         ids_shm[i] = pid;
         seeds_shm[i] = rand();
     }
-    if (pid == 0)
+    
+    bool child = (pid == 0);
+    if (child)
     {
         execl("child.o", "child.o", NULL);
         exit(0);
     }
-    if (pid > 0)
+    else
     {
         for (int i = 0; i < numCPU; i++)
         {
