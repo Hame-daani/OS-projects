@@ -5,7 +5,7 @@
 #include <fcntl.h>    /* For O_* constants */
 #include <signal.h>
 #include <sys/wait.h>
-#include<fstream>
+#include <fstream>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ int main()
     int *seeds_shm = (int *)createMemory(seeds_shm_name, seeds_shm_size);
 
     srand(time(0));
-    pid_t pid;
+    pid_t pid = 0;
     for (int i = 0; i < numCPU; i++)
     {
         pid = fork();
@@ -35,7 +35,7 @@ int main()
         ids_shm[i] = pid;
         seeds_shm[i] = rand();
     }
-    
+
     bool child = (pid == 0);
     if (child)
     {
@@ -56,6 +56,9 @@ int main()
         cout << getpid() << endl;
         munmap(ids_shm, ids_shm_size);
         shm_unlink(ids_shm_name);
+
+        munmap(seeds_shm, seeds_shm_size);
+        shm_unlink(seeds_shm_name);
         return 0;
     }
 }
