@@ -1,4 +1,4 @@
 # Knapsack Problem
-Try to find Efficient Answer for problem by using child processes that run parallel.
+Try to find efficient Answer for problem by using child processes that run parallel.
 ### How to Use
-give program a Max Weight and a ideal runt time.
+add a data file to folder. Give program a max weight and an ideal run time.
