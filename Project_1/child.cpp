@@ -20,8 +20,8 @@ void process(vector<int> &, int[100][2], int);
 
 #define WEIGHT 0
 #define VALUE 1
-#define IDEAL_WEIGHT 0
-#define TIME 1
+#define MAX_WEIGHT 0
+#define RUN_TIME 1
 
 int main()
 {
@@ -67,14 +67,14 @@ int main()
 
     cout << "Child " << myIndex + 1 << " Running..." << endl;
 
-    int runTime = params_shm[TIME];
+    int runTime = params_shm[RUN_TIME];
 
     time_t start = time(NULL);
     time_t now = time(NULL);
     
     while ((now - start) <= runTime)
     {
-        process(bestResult, data, params_shm[IDEAL_WEIGHT]);
+        process(bestResult, data, params_shm[MAX_WEIGHT]);
         now = time(NULL);
     }
 

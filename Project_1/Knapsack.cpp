@@ -10,8 +10,8 @@ using namespace std;
 
 void *createMemory(const char *, int);
 
-#define IDEAL_WEIGHT 0
-#define TIME 1
+#define MAX_WEIGHT 0
+#define RUN_TIME 1
 
 int main()
 {
@@ -40,12 +40,12 @@ int main()
     int *result_value_shm = (int *)createMemory(result_value_shm_name, result_value_shm_size);
 
     int a;
-    cout << "Insert Ideal Weight: ";
+    cout << "Insert Max Weight: ";
     cin >> a;
-    params_shm[IDEAL_WEIGHT] = a;
+    params_shm[MAX_WEIGHT] = a;
     cout << "Insert Run Time: ";
     cin >> a;
-    params_shm[TIME] = a;
+    params_shm[RUN_TIME] = a;
 
     srand(time(NULL));
 
@@ -115,8 +115,7 @@ int main()
 
 void *createMemory(const char *name, int size)
 {
-    int fd;
-    fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+    int fd = shm_open(name, O_CREAT | O_RDWR, 0666);
     ftruncate(fd, size);
 
     void *ptr = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
