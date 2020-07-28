@@ -1,3 +1,4 @@
 ## OS Projects
-Educational Projects for **Operating Systems** Course in Jundy Shapur University (JSU)  
-**Fall 2018**.
+Solving knapsack problem using:
+1. [multi-Porcesses](Project_1/)
+2. [multi-Threads](Project_2/)
